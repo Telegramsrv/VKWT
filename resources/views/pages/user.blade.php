@@ -1,6 +1,29 @@
 @extends('index')
 
 @section('content')
+    <script type="text/javascript">
+        google.charts.load('current', {'packages':['corechart']});
+        google.charts.setOnLoadCallback(drawChart);
+
+        function drawChart() {
+            var data = google.visualization.arrayToDataTable([
+                ['Date', 'Like'],
+                    @foreach ( $postsStatistics as $date => $qty)
+                [ '{{ $date}}', {{ $qty}}],
+                @endforeach
+            ]);
+
+            var options = {
+                title: 'Like statistics',
+                curveType: 'function',
+                legend: { position: 'bottom' }
+            };
+
+            var chart = new google.visualization.LineChart(document.getElementById('curve_chart'));
+
+            chart.draw(data, options);
+        }
+    </script>
 <div class="row bg-white">
     <img src="{{ $Owner['photo_max'] }}" class="img-circle col-sm-2">
     <div class="col-sm-5">
@@ -9,9 +32,7 @@
         <p>Всего лайков:{{$likeCount}}</p>
         <p>Всего репостов:{{$repostsCount}}</p>
     </div>
-    <div class="col-sm-7">
-        <img style="width: 100%" src="http://www.istashenko.com/wp-content/uploads/2013/06/grafikKirkorov.jpg">
-    </div>
+        <div id="curve_chart" style="width: 100%; height: 500px" class="col-md-5"></div>
 </div><br/>
 
 
@@ -28,7 +49,7 @@
                 <img class="center-block" src="{{ $topWall['attachment']['photo']['src_big'] }}">
             @endif
         </div>
-        <p class="text-primary">Likes : {{$topWall['likes']['count']}} Reposts : {{ $topWall['reposts']['count'] }}</p>
+        <p class="text-primary container">Likes : {{$topWall['likes']['count']}} Reposts : {{ $topWall['reposts']['count'] }}</p>
     </div><br/>
 
 <div class="row bg-white">
@@ -41,11 +62,10 @@
         </a>
         <p>{{ $firstWall['text'] }}</p>
         @if (isset($firstWall['attachment']['photo']['src_big'] ))
-        <img class="center-block" src="{{ $firstWall['attachment']['photo']['src_big'] }}">
+            <img class="center-block" src="{{ $firstWall['attachment']['photo']['src_big'] }}">
         @endif
-    </div>
-    <p class="text-primary">Likes : {{$firstWall['likes']['count']}} Reposts : {{ $firstWall['reposts']['count']}}</p>
-
+    </div><br/>
+    <p class="text-primary container">Likes : {{$firstWall['likes']['count']}} Reposts : {{ $firstWall['reposts']['count']}}</p>
 </div><br/>
 
 @stop

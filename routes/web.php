@@ -11,10 +11,6 @@
 |
 */
 
-//Route::get('/', function () {
-//    return view('welcome');
-//});
-
-Route::get('/', 'HomeController@index');
-Route::get('/friends', ['uses' => 'HomeController@friendsList']);
-Route::get('/{id}', ['uses' => 'HomeController@getUser']);
+Route::get('/', 'VKController@index');
+Route::get('/frineds', 'VKController@FriendList');
+Route::get('/{id}', 'VKController@getUser');
