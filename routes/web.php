@@ -10,7 +10,6 @@
 | to using a Closure or controller method. Build something great!
 |
 */
-
 Route::get('/', 'VKController@index');
 Route::get('/friends', 'VKController@FriendList');
 Route::get('/{id}', 'VKController@getUser');

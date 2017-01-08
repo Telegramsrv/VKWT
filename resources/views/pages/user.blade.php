@@ -25,12 +25,11 @@
         }
     </script>
 <div class="row bg-white">
-    <img src="{{ $Owner['photo_max'] }}" class="img-circle col-sm-2">
+    <img src="{{ $Owner['photo_100'] }}" class="img-circle col-sm-2">
     <div class="col-sm-5">
         <h2>{{ $Owner['first_name']}} {{ $Owner['last_name']}}</h2>
-        <p>Всего записей:{{$wallCount}}</p>
-        <p>Всего лайков:{{$likeCount}}</p>
-        <p>Всего репостов:{{$repostsCount}}</p>
+        <p>Всего записей:{{$Owner['wallcount']}}</p>
+        <p>Всего лайков:{{$Owner['likescount']}}</p>
     </div>
         <div id="curve_chart" style="width: 100%; height: 500px" class="col-md-5"></div>
 </div><br/>
@@ -38,7 +37,7 @@
 
     <div class="row bg-white">
         <h4 class="text-center">Самый популярный пост</h4>
-        <img src="{{ $Owner['photo_max'] }}" class="img-circle col-sm-1">
+        <img src="{{ $Owner['photo_100'] }}" class="img-circle col-sm-1">
         <div>
             <p>{{ $Owner['first_name'] }} {{ $Owner['last_name'] }}</p>
             <a href="https://vk.com/wall{{$topWall['to_id']}}_{{$topWall['id']}}">
@@ -54,7 +53,7 @@
 
 <div class="row bg-white">
     <h4 class="text-center">Первый пост на странице</h4>
-    <img src="{{ $Owner['photo_max'] }}" class="img-circle col-sm-1">
+    <img src="{{ $Owner['photo_100'] }}" class="img-circle col-sm-1">
     <div>
         <p>{{ $Owner['first_name'] }} {{ $Owner['last_name'] }}</p>
         <a href="https://vk.com/wall{{$firstWall['to_id']}}_{{$firstWall['id']}}">

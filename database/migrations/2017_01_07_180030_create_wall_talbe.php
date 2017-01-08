@@ -18,6 +18,7 @@ class CreateWallTalbe extends Migration
             $table->integer('user_id');
             $table->integer('wall_id');
             $table->integer('likes');
+            $table->integer('date');
             $table->timestamps();
         });
     }
