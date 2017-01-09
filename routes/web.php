@@ -12,4 +12,4 @@
 */
 Route::get('/', 'VKController@index');
 Route::get('/friends{id}', 'VKController@FriendList');
-Route::get('/{id}', 'VKController@getUser');
+Route::get('/{id}', 'UserController@getUser');

@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateWallTalbe extends Migration
+class CreateWallsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,13 +13,13 @@ class CreateWallTalbe extends Migration
      */
     public function up()
     {
-        Schema::create('wall', function (Blueprint $table) {
-            $table->increments('id');
-            $table->integer('user_id');
-            $table->integer('wall_id');
-            $table->integer('likes');
-            $table->integer('date');
-            $table->timestamps();
+        Schema::create('walls', function (Blueprint $table) {
+	        $table->increments('id');
+	        $table->integer('user_id');
+	        $table->integer('wall_id');
+	        $table->integer('likes');
+	        $table->integer('date');
+	        $table->timestamps();
         });
     }
 
@@ -30,6 +30,6 @@ class CreateWallTalbe extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('wall');
+        Schema::dropIfExists('walls');
     }
 }

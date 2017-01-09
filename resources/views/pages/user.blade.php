@@ -42,13 +42,15 @@
             <p>{{ $Owner['first_name'] }} {{ $Owner['last_name'] }}</p>
             <a href="https://vk.com/wall{{$topWall['to_id']}}_{{$topWall['id']}}">
             <small>{{ date('d-m-Y',$topWall['date']) }}</small>
-            </a>
-            <p>{{ $topWall['text'] }}</p>
+            </a><br/>
+            <div class="container">
+            <p>{!!$topWall['text']!!}</p>
             @if (isset($topWall['attachment']['photo']['src_big'] ))
                 <img class="center-block" src="{{ $topWall['attachment']['photo']['src_big'] }}">
             @endif
+            </div>
         </div>
-        <p class="text-primary container">Likes : {{$topWall['likes']['count']}} Reposts : {{ $topWall['reposts']['count'] }}</p>
+        <p class="text-primary container">Likes : {{$topWall['likes']['count']}}</p>
     </div><br/>
 
 <div class="row bg-white">
@@ -58,13 +60,15 @@
         <p>{{ $Owner['first_name'] }} {{ $Owner['last_name'] }}</p>
         <a href="https://vk.com/wall{{$firstWall['to_id']}}_{{$firstWall['id']}}">
         <small>{{ date('d-m-Y',$firstWall['date']) }}</small>
-        </a>
-        <p>{{ $firstWall['text'] }}</p>
+        </a><br/>
+        <div class="container">
+        <p>{!!$firstWall['text']!!}</p>
         @if (isset($firstWall['attachment']['photo']['src_big'] ))
             <img class="center-block" src="{{ $firstWall['attachment']['photo']['src_big'] }}">
         @endif
+        </div>
     </div><br/>
-    <p class="text-primary container">Likes : {{$firstWall['likes']['count']}} Reposts : {{ $firstWall['reposts']['count']}}</p>
+    <p class="text-primary container">Likes : {{$firstWall['likes']['count']}}</p>
 </div><br/>
 
 @stop
