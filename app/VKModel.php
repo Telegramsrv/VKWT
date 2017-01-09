@@ -22,20 +22,31 @@ class VKModel extends Model
 		if (isset($_COOKIE['token']))
 		{
 			$vk = new VK($this->vk_config['app_id'], $this->vk_config['api_secret'],$_COOKIE['token']);
-
-			$this->userinfo = $vk->api('users.get', array(
-				'fields'    => 'uid,first_name,last_name,photo_100',
-			));
-			if ( isset($this->userinfo['response'])){
+			while ( true) {
+				$this->userinfo = $vk->api(
+					'users.get',
+					array(
+						'fields' => 'uid,first_name,last_name,photo_100',
+					)
+				);
+				if ( isset($this->userinfo['response'][0])) {
+					break;
+				}
+				if ( isset($this->userinfo['error']) && $this->userinfo['error']['error_code'] != 6){
+					break;
+				}
+			}
+			if ( isset($this->userinfo['response'][0])){
 				$this->userinfo = $this->userinfo['response'][0];
 				return true;
 			}
 			else {
-				setcookie('token', 0, 0);
-				return false;
+				setcookie('token', null, -1, '/');
+				header("Location: {$this->vk_config['callback_url']}");//Auth false
 			}
 		}
-		else return false;
+		else header("Location: {$this->vk_config['callback_url']}");//Auth false;
+		die();
 	}
 
 	private function getValidWalls($user_id = false)
@@ -47,7 +58,7 @@ class VKModel extends Model
 
 		if ( isset($results[0]))  {
 			$insert = false;
-			if (( $results[0]->updated_at + ( 24*60*60)) < date('Y-m-d',time())) {
+			if (( $results[0]->updated_at > date('Y-m-d  H:i:s',time() - ( 24*60*60)))) {
 				$walls = [];
 				foreach ($results as $wall) {
 					$walls[] = array(
@@ -70,21 +81,26 @@ class VKModel extends Model
 			$offset = 0;
 			$user_walls = [];
 			do {
-				$walls_tmp = $vk->api(
-					'wall.get',
-					array(
-						'owner_id' => $user_id ? $user_id : '0',
-						'count'    => $limit,
-						'offset'   => $offset,
-						'filter'   => 'owner'
-					)
-				);
+				while(!isset($walls_tmp['response'])) {
+					$walls_tmp = $vk->api(
+						'wall.get',
+						array(
+							'owner_id' => $user_id ? $user_id : '0',
+							'count'    => $limit,
+							'offset'   => $offset,
+							'filter'   => 'owner'
+						)
+					);
+					usleep(100000);
+				}
 				$walls_tmp = $walls_tmp['response'];
 				unset($walls_tmp[0]);
+				if (!count($walls_tmp)){
+					return false;
+				}
 				$count = count($walls_tmp);
 				$user_walls = array_merge($user_walls, $walls_tmp);
 				$offset += $count;
-				usleep(300000);
 			}
 			while ($count == $limit);
 
@@ -130,31 +146,41 @@ class VKModel extends Model
 	{
 		$post = $user_id.'_'.$wall_id;
 		$vk = new VK($this->vk_config['app_id'], $this->vk_config['api_secret'],$_COOKIE['token']);
-
-		$wall = $vk->api('wall.getById', array(
-			'posts'    => $post,
-		));
+		while (!isset($wall['response'][0])) {
+			$wall = $vk->api(
+				'wall.getById',
+				array(
+					'posts' => $post,
+				)
+			);
+			usleep(100000);
+		}
 		return $wall['response'][0];
 	}
 
-	public function getAuth($location = false)
+	public function getAuth()
 	{
 		try {
-			if (isset($_COOKIE['token']))
+			if (isset($_COOKIE['token']) && $_COOKIE['token'])
 			{
 				$vk = new VK($this->vk_config['app_id'], $this->vk_config['api_secret'],$_COOKIE['token']);
 
-				$this->userinfo = $vk->api('users.get', array(
-					'fields'    => 'uid,first_name,last_name,photo_100',
-				));
-				if ( isset($this->userinfo['response'])){
+				while (!isset($this->userinfo['response'][0])) {
+					$this->userinfo = $vk->api(
+						'users.get',
+						array(
+							'fields' => 'uid,first_name,last_name,photo_100',
+						)
+					);
+				}
+				if ( isset($this->userinfo['response'][0])){
 					$this->userinfo = $this->userinfo['response'][0];
-					$redirect = $location ? $location : $this->userinfo['uid'];
-					header("Location: {$this->vk_config['callback_url']}{$redirect}");//Auth true
+					header("Location: {$this->vk_config['callback_url']}{$this->userinfo['uid']}");//Auth true
 					die();
 				}
 				else {
-					setcookie('token', 0, 0);
+					setcookie('token', null, -1,'/');
+					unset($_COOKIE['token']);
 					header("Location: {$this->vk_config['callback_url']}");//Auth false
 					die();
 				}
@@ -169,8 +195,7 @@ class VKModel extends Model
 				} else {
 					$access_token = $vk->getAccessToken($_REQUEST['code'], $this->vk_config['callback_url']);
 					setcookie('token',$access_token['access_token'],time()+$access_token['expires_in']);
-					$redirect = $location ? $location : $this->userinfo['uid'];
-					header("Location: {$this->vk_config['callback_url']}{$redirect}");//Auth true
+					header("Location: {$this->vk_config['callback_url']}{$access_token['user_id']}");//Auth true
 					die();
 				}
 			}
@@ -179,35 +204,6 @@ class VKModel extends Model
 		}
 	}
 
-	public function __construct()
-    {
-//	    try {
-//		    if (isset($_COOKIE['token']))
-//		    {
-//			    $vk = new VK($this->vk_config['app_id'], $this->vk_config['api_secret'],$_COOKIE['token']);
-//
-//			    $this->userinfo = $vk->api('users.get', array(
-//				    'fields'    => 'uid,first_name,last_name,photo_100',
-//			    ))['response'][0];
-//		    }
-//		    else {
-//			    $vk = new VK($this->vk_config['app_id'], $this->vk_config['api_secret']);
-//
-//			    if (!isset($_REQUEST['code'])) {
-//				    $authorize_url = $vk->getAuthorizeURL(
-//					    $this->vk_config['api_settings'], $this->vk_config['callback_url']);
-//				    echo '<a href="' . $authorize_url . '">Sign in with VK</a>';
-//				    die();
-//			    } else {
-//				    $access_token = $vk->getAccessToken($_REQUEST['code'], $this->vk_config['callback_url']);
-//				    setcookie('token',$access_token['access_token'],time()+$access_token['expires_in']);
-//				    header("Location: ".$this->vk_config['callback_url']);
-//			    }
-//		    }
-//	    } catch (VKException $error) {
-//		    echo $error->getMessage();
-//	    }
-    }
 
     public function getIntro($user_id = false)
     {
@@ -215,16 +211,23 @@ class VKModel extends Model
 
 	    //WALLS COUNT,likes
 	    $likesCount = 0;
-	    foreach ( $user_walls as $user_wall)
-	    {
-		    $likesCount += $user_wall['likes']['count'];
+	    if ($user_walls) {
+		    foreach ($user_walls as $user_wall) {
+			    $likesCount += $user_wall['likes']['count'];
+		    }
 	    }
-
 	    //USER INFO
 	    $vk = new VK($this->vk_config['app_id'], $this->vk_config['api_secret'],$_COOKIE['token']);
 
-		$user = $vk->api('users.get', array('user_ids' => $user_id ? $user_id : '', 'fields' => 'uid,first_name,last_name,photo_100'));
-
+	    while(!isset($user['response'])) {
+		    $user = $vk->api(
+			    'users.get',
+			    array(
+				    'user_ids' => $user_id ? $user_id : '',
+				    'fields'   => 'uid,first_name,last_name,photo_100'
+			    )
+		    );
+	    }
 	    $user = $user['response'][0];
 		$user['likescount'] = $likesCount;
 		$user['wallcount'] = count($user_walls);
@@ -244,7 +247,7 @@ class VKModel extends Model
 			    $topRatedWall = $user_wall;
 		    }
 	    }
-	    return $this->getWallById($topRatedWall['from_id'],$topRatedWall['id']);
+	    return $this->getWallById($topRatedWall['owner_id'],$topRatedWall['id']);
     }
 
     public function getFirstWall($user_id = false)
@@ -260,14 +263,14 @@ class VKModel extends Model
 		    	$minWall = $user_wall;
 		    }
 	    }
-	    return $this->getWallById($minWall['from_id'],$minWall['id']);
+	    return $this->getWallById($minWall['owner_id'],$minWall['id']);
     }
 
     public function getWallStats($user_id = false)
     {
 	    $user_walls = $this->getValidWalls($user_id);
 	    $stats = [];
-	    foreach ( $user_walls as $user_wall)
+	    foreach ( array_reverse($user_walls) as $user_wall)
 	    {
 			$user_wall['date'] = date( 'Y-m-d', $user_wall['date']);
 			if (array_key_exists($user_wall['date'],$stats)){
@@ -285,11 +288,17 @@ class VKModel extends Model
 	    try {
 		    $vk = new VK($this->vk_config['app_id'], $this->vk_config['api_secret'],$_COOKIE['token']);
 
-		    $user_friends = $vk->api('friends.get',array(
-		        'uid' => $user_id ? $user_id : '0',
-		        'fields'  => 'uid,first_name,last_name,photo_100',
-		        'order'   => 'fields')
-		    );
+		    while (!isset($user_friends['response'])) {
+			    $user_friends = $vk->api(
+				    'friends.get',
+				    array(
+					    'uid'    => $user_id ? $user_id : '0',
+					    'fields' => 'uid,first_name,last_name,photo_100',
+					    'order'  => 'name'
+				    )
+			    );
+			    usleep(100000);
+		    }
 		    $user_friends = $user_friends['response'];
 
 		    $user_friendsIntro = [];
@@ -297,7 +306,7 @@ class VKModel extends Model
 		    {
 			    $user_friendsIntro[] = $this->getIntro($user_friend['user_id']);
 		    }
-			return $user_friends;
+			return $user_friendsIntro;
 
 	    }
 	    catch (VKException $error) {

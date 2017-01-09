@@ -20,14 +20,32 @@ class VKController extends Controller
 	    }
     }
 
-    public function FriendList()
+    public function FriendList($id)
     {
-    	//TODO
+    	$VKM = new VKModel();
+	    if ($VKM->isAuth()){
+		    $data = array(
+			    'title' => 'Список друзей',
+			    'FriendList' => $VKM->getFriendList($id),
+			    'Owner' => $VKM->getIntro($id)
+		    );
+		    return view('pages.friends',$data);
+	    } else {
+		    $url = $VKM->getAuth();
+		    if ($url){
+			    $data = array(
+				    'title' => 'VKWT | Главная страница',
+				    'url'   => $url
+			    );
+			    return view('pages.login',$data);
+		    }
+	    }
     }
 
     public function getUser($id)
     {
 	    $VKM = new VKModel();
+
 	    if ($VKM->isAuth()){
 	    	$data = array(
 	    		'title' => 'Пользователь',
@@ -37,6 +55,15 @@ class VKController extends Controller
 			    'firstWall' => $VKM->getFirstWall($id)
 		    );
 	    	return view('pages.user',$data);
+	    } else {
+		    $url = $VKM->getAuth();
+		    if ($url){
+			    $data = array(
+				    'title' => 'VKWT | Главная страница',
+				    'url'   => $url
+			    );
+			    return view('pages.login',$data);
+		    }
 	    }
     }
 }
