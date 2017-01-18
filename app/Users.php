@@ -3,6 +3,7 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
+use PhpParser\Parser\Tokens;
 
 class Users extends Model
 {
@@ -33,8 +34,13 @@ class Users extends Model
 		return $this->wallPosts()->sum('likes');
 	}
 
+	public function token()
+	{
+		return $this->hasOne('App\Token');
+	}
+
 	public function wallPosts()
 	{
-		return $this->hasMany(Walls::class,'user_id');
+		return $this->hasMany('App\Walls','user_id');
 	}
 }

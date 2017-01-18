@@ -4,9 +4,11 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 
-class Walls extends Model
+class Token extends Model
 {
-	protected $foreignKey = 'walls.user_id';
+	protected $primaryKey = 'token';
+
+	protected $foreignKey = 'user_id';
 
 	public function user()
 	{

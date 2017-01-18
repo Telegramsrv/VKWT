@@ -15,9 +15,9 @@ class CreateUsersTable extends Migration
     {
         Schema::create('users', function (Blueprint $table) {
 	        $table->integer('user_id')->unique();
-            $table->string('first_name', 32);
-            $table->string('last_name', 32);
-            $table->string('photo', 256);
+            $table->string('first_name', 32)->nullable();
+            $table->string('last_name', 32)->nullable();
+            $table->string('photo', 256)->nullable();
             $table->boolean('uploaded')->default(false);
             $table->timestamps();
         });
