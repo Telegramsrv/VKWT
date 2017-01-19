@@ -98,6 +98,7 @@ class UpdateWalls extends Command
 				    $Wall->likes   = $user_wall['likes']['count'];
 				    $Wall->save();
 			    }
+			    $this->info('User id'.$friend->friend_id.' walls add');
 		    }
 
 		    //update self walls

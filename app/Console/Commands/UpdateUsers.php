@@ -64,6 +64,8 @@ class UpdateUsers extends Command
 		    $user_friends = $user_friends['response'];
 		    foreach ( $user_friends as $friend)
 		    {
+		    	if (isset($friend['deactivated']))
+		    		continue;
 			    $NewFrind = Friends::where('user_id', $User->user_id)->where('friend_id',$friend['uid'])->first();
 			    if (!$NewFrind){
 				    $NewFrind = new Friends;
