@@ -168,7 +168,7 @@ return [
          */
 
         //
-
+        App\Providers\VkServiceProvider::class,
         /*
          * Application Service Providers...
          */

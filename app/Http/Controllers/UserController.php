@@ -9,11 +9,18 @@ use Illuminate\Http\Request;
 
 class UserController extends Controller
 {
+	private $_serviceVkConfig;
+
+	public function __construct()
+	{
+		$this->_serviceVkConfig = App('service.vkconfig');
+	}
+
 	public function auth( Request $request)
 	{
 		$data = array(
 			'title' => 'VKWT | Главная страница',
-			'url'   => $request->cookie('url')
+			'url'   => $this->_serviceVkConfig->getAuthorizeURL()
 		);
 		return view('pages.login',$data);
 	}

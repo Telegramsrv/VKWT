@@ -29,6 +29,7 @@ class UpdateUsers extends Command
      *
      * @return void
      */
+
     public function __construct()
     {
         parent::__construct();
@@ -39,17 +40,16 @@ class UpdateUsers extends Command
      *
      * @return mixed
      */
-	protected $vk_config = array(
-		'app_id'        => '5809395',
-		'api_secret'    => 'uhK1NhUTKDEXbwk9v0ZS'
-	);
+
 
     public function handle()
     {
+	    $VKConfig = App('service.vkconfig');
+
 	    $UserList = Token::where( 'updated_at', '>', date('Y-m-d H:m:s', time() - 24*60*60))->get();
 	    foreach ( $UserList as $User )
 	    {
-		    $vk = new VK( $this->vk_config['app_id'], $this->vk_config['api_secret'], $User->token);
+		    $vk = new VK( $VKConfig->get_config('app_id'), $VKConfig->get_config('api_secret'), $User->token);
 
 		    //update friend list
 		    while (!isset($user_friends['response'])) {

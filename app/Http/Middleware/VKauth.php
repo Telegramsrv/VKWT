@@ -19,20 +19,14 @@ class VKauth
      * @return mixed
      */
 
-	protected $vk_config = array(
-		'app_id'        => '5809395',
-		'api_secret'    => 'uhK1NhUTKDEXbwk9v0ZS',
-		'callback_url'  => 'http://laravel.loc/',
-		'api_settings'  => 'wall,friends'
-	);
-
 	protected $userinfo = [];
 
     public function handle($request, Closure $next)
     {
+    	$VKConfig = App('service.vkconfig');
 	    try {
 		    if ($request->hasCookie('token')) {
-			    $vk = new VK( $this->vk_config['app_id'], $this->vk_config['api_secret'], $request->cookie('token'));
+			    $vk = new VK( $VKConfig->get_config('app_id'), $VKConfig->get_config('api_secret'), $request->cookie('token'));
 			    while (true) {
 				    $this->userinfo = $vk->api(
 					    'users.get',
@@ -51,14 +45,12 @@ class VKauth
 			    }
 		    }
 		    else {
-			    $vk = new VK($this->vk_config['app_id'], $this->vk_config['api_secret']);
+			    $vk = new VK($VKConfig->get_config('app_id'), $VKConfig->get_config('api_secret'));
 
 			    if (!$request->code) {
-				    $url = $vk->getAuthorizeURL(
-					    $this->vk_config['api_settings'], $this->vk_config['callback_url']);
-				    return redirect('/auth')->withCookie( cookie( 'url', $url, 24*60));//Get auth
+				    return redirect('/auth');//Get auth
 			    } else {
-				    $access_token = $vk->getAccessToken( $request->code, $this->vk_config['callback_url']);
+				    $access_token = $vk->getAccessToken( $request->code, $VKConfig->get_config('callback_url'));
 					//Check token at DB and Update/Add
 				    $UserToken = Token::where('user_id',$access_token['user_id'])->first();
 				    if (!$UserToken){
