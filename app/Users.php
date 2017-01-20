@@ -11,7 +11,7 @@ class Users extends Model
 	public function statistics()
 	{
 		$buffer = [];
-		$walls = $this->wallPosts();
+		$walls = $this->wallPosts()->get();
 
 		foreach ($walls as $wall) {
 			$wall->date  = date('d-m-Y', $wall->date);
@@ -43,5 +43,13 @@ class Users extends Model
 
 	public function friends(){
 		return $this->hasMany('App\Friends','user_id');
+	}
+
+	public function getTopRatedPost(){
+		return $this->wallPosts()->orderBy('likes','desc')->first();
+	}
+
+	public function getFirstPost(){
+		return $this->wallPosts()->orderBy('date','asc')->first();
 	}
 }
