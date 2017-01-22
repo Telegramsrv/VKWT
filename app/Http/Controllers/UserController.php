@@ -43,6 +43,7 @@ class UserController extends Controller
 	public function getUser($id)
 	{
 		$User = Users::where('user_id',$id)->first();
+
 //		$FriendStats = $User->friends()->get()->map(function ($item){return $item->user()->statistics();});
 		$data = array(
 			'title' => 'Пользователь '.$User->last_name.' '.$User->first_name,

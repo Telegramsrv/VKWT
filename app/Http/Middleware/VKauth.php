@@ -6,7 +6,7 @@ namespace App\Http\Middleware;
 use App\Users;
 use App\Token;
 use Closure;
-use Illuminate\Auth\Access\Response;
+use Illuminate\Http\Response;
 use VK\VK;
 
 class VKauth
@@ -59,7 +59,7 @@ class VKauth
 				    $UserToken->token = $access_token['access_token'];
 				    $UserToken->user_id = $access_token['user_id'];
 				    $UserToken->save();
-				    return redirect('/auth')->withCookie( cookie( 'token', $access_token['access_token'], $access_token['expires_in']));//Auth true
+				    return redirect('/')->withCookie( cookie( 'token', $access_token['access_token'], $access_token['expires_in']));//Auth true
 			    }
 		    }
 	    } catch (VKException $error) {
