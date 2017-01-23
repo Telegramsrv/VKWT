@@ -1,6 +1,10 @@
 #VK Wall Tracker
 We First project with Laravel,track user walls and his friends and give you statistics with top rated post and graphics popularity.
 
+Cron func
+php artisan update:users
+php artisan update:walls
+
 # Laravel PHP Framework
 
 [![Build Status](https://travis-ci.org/laravel/framework.svg)](https://travis-ci.org/laravel/framework)

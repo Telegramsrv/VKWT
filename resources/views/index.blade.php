@@ -17,7 +17,7 @@
         }
     </style>
 </head>
-<body class="bg-info">
+<body class="bg-info" onload="drawChart()">
 <div class="container">
     @yield('content')
 </div>

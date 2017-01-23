@@ -24,7 +24,6 @@
             chart.draw(data, options);
         }
     </script>
-
 <div class="row bg-white">
     <img src="{{ $Owner->photo }}" class="img-circle col-sm-2">
     <div class="col-sm-5">
@@ -34,8 +33,6 @@
     </div>
         <div id="curve_chart" style="width: 100%; height: 500px" class="col-md-5"></div>
 </div><br/>
-
-
 <div class="row bg-white">
     <h4 class="text-center">Самый популярный пост</h4>
     <img src="{{ $Owner->photo }}" class="img-circle col-sm-1">

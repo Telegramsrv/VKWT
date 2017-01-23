@@ -13,5 +13,6 @@
 Route::get('/auth', 'UserController@auth');
 Route::get('/',[ 'middleware' => 'VKauth','uses' => 'UserController@index']);
 Route::get('/id{id}', [ 'middleware' => 'VKauth', 'uses' => 'UserController@getUser']);
+Route::get('/friends', [ 'middleware' => 'VKauth', 'uses' => 'UserController@getFriend']);
 //Route::get('/friends{id}', 'VKController@FriendList');
 

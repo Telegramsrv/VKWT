@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Token;
 use App\Users;
 
+use gchart\gLineChart;
+use gchart\gPieChart;
 use Illuminate\Http\Request;
 
 class UserController extends Controller
@@ -52,5 +54,32 @@ class UserController extends Controller
 			'Statistics' => $User->statistics()
 		);
 		return view('pages.user',$data);
+	}
+
+	public function getFriend(Request $request)
+	{
+		$User = Token::where('token',$request->cookie('token'))->first()->user()->first();
+
+		$FriendStats = $User->friends()->get()->map(function ($item){ return array_merge($item->user()->statistics(),$item->user()->toArray());});
+
+		if (!$User){
+			$User = new Users;
+			$User->user_id = Token::where('token',$request->cookie('token'))->first()->user_id;
+			$User->save();
+		}
+		if (!$User->uploaded){
+			dd($User);//msg waiting for cron download information
+			return view('pages.wait');
+		}
+		if ($User){
+			$data = array(
+				'title' => 'Друзья пользователя :'.$User->last_name.' '.$User->first_name,
+				'Owner' => $User,
+				'Statistics' => $User->statistics(),
+				'FriendStats' => $FriendStats
+			);
+			return view('pages.friends',$data);
+		}
+		return view('pages.wait');//delete
 	}
 }
