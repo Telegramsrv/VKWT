@@ -2,7 +2,9 @@
 We First project with Laravel,track user walls and his friends and give you statistics with top rated post and graphics popularity.
 
 Cron func
+
 php artisan update:users
+
 php artisan update:walls
 
 # Laravel PHP Framework

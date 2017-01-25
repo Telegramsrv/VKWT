@@ -82,7 +82,7 @@ class UpdateUsers extends Command
 			    $NewUser->first_name = $friend['first_name'];
 			    $NewUser->last_name = $friend['last_name'];
 			    $NewUser->photo = $friend['photo_100'];
-			    $NewUser->uploaded = true;
+			    $NewUser->status = 'processing';
 			    $NewUser->save();
 		    }
 
@@ -105,7 +105,7 @@ class UpdateUsers extends Command
 		    $SelfUser->first_name = $userinfo['first_name'];
 		    $SelfUser->last_name = $userinfo['last_name'];
 		    $SelfUser->photo = $userinfo['photo_100'];
-		    $SelfUser->uploaded = true;
+		    $SelfUser->status = 'processing';
 		    $SelfUser->save();
 	    }
 	    $this->info('Users and Friends info successful updated!');

@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\Users;
 use VK\VK;
 use App\Token;
 use App\Walls;
@@ -94,6 +95,7 @@ class UpdateWalls extends Command
 				    $Wall->likes   = $user_wall['likes']['count'];
 				    $Wall->save();
 			    }
+			    Users::where('user_id',$friend->friend_id)->update([ 'status' => 'done']);
 			    $this->info('User id'.$friend->friend_id.' walls add');
 		    }
 
@@ -136,6 +138,7 @@ class UpdateWalls extends Command
 			    $Wall->likes   = $user_wall['likes']['count'];
 			    $Wall->save();
 		    }
+		    Users::where('user_id',$User->user_id)->update([ 'status' => 'done']);
 	    }
 	    $this->info('Walls info successful updated');
     }

@@ -18,7 +18,7 @@ class CreateUsersTable extends Migration
             $table->string('first_name', 32)->nullable();
             $table->string('last_name', 32)->nullable();
             $table->string('photo', 256)->nullable();
-            $table->boolean('uploaded')->default(false);
+            $table->string('status', 32)->default('empty');
             $table->timestamps();
         });
     }
