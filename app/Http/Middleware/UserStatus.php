@@ -18,7 +18,6 @@ class UserStatus
     public function handle($request, Closure $next)
     {
 	    $User = Token::where('token',$request->cookie('token'))->first()->user()->first();
-
     	if ($User)
 	    {
 	    	if (!$User->friends()->get()->contains(function ($friend){ return $friend->user()->status == 'processing'; } ))

@@ -49,39 +49,27 @@ class UpdateWalls extends Command
 		    $vk = new VK( $VKConfig->get_config('app_id'), $VKConfig->get_config('api_secret'), $User->token);
 
 		    $FriendList = $User->user()->first()->friends()->get();
-
 		    foreach ( $FriendList as $friend)
 		    {
 			    $FriendWallUpdateTime = Walls::where('user_id',$friend->friend_id)->first();
 
-			    if ( $FriendWallUpdateTime && $FriendWallUpdateTime->updated_at < date('Y-m-d H:m:s', time() - 60*60)) continue;
+			    if ( $FriendWallUpdateTime && $FriendWallUpdateTime->updated_at > date('Y-m-d H:m:s', time() - 60*60)) continue;
 
-			    $limit = 100;
-			    $offset = 0;
-			    $user_walls = [];
-			    do {
-				    while(true) {
-					    $walls_tmp = $vk->api(
-						    'wall.get',
-						    array(
-							    'owner_id' => $friend->friend_id,
-							    'count'    => $limit,
-							    'offset'   => $offset,
-							    'filter'   => 'owner'
-						    )
-					    );
-					    if (isset($walls_tmp['response'])){
-						    $walls_tmp = $walls_tmp['response'];
-						    unset($walls_tmp[0]);
-						    break;
-					    }
-
-				    }
-				    $count = count($walls_tmp);
-				    $user_walls = array_merge($user_walls, $walls_tmp);
-				    $offset += $count;
+				//upload last 2500 posts
+			    $code = 'return {"returned": [';
+			    for ($i = 0; $i < 25; $i++) {
+				    $code .= 'API.wall.get({"owner_id": "' . $friend->friend_id . '","filter": "owner","count": "100","offset": "' . ($i * 100) . '"}),';
 			    }
-			    while ($count == $limit);
+			    $code .= ']};';
+			    while (!isset($resp['response'])) {
+				    $resp = $vk->api('execute', ['code' => $code]);
+			    }
+			    $user_walls = [];
+			    $resp = $resp['response']['returned'];
+			    foreach ( $resp as $wall)   {
+				    unset($wall[0]);
+				    if ($wall) $user_walls = array_merge($user_walls, $wall);
+			    }
 
 			    foreach ( $user_walls as $user_wall)
 			    {
@@ -100,36 +88,24 @@ class UpdateWalls extends Command
 		    }
 
 		    //update self walls
-		    $limit = 100;
-		    $offset = 0;
-		    $user_walls = [];
-		    do {
-			    while(true) {
-				    $walls_tmp = $vk->api(
-					    'wall.get',
-					    array(
-						    'owner_id' => $User->user_id,
-						    'count'    => $limit,
-						    'offset'   => $offset,
-						    'filter'   => 'owner'
-					    )
-				    );
-				    if (isset($walls_tmp['response'])){
-					    $walls_tmp = $walls_tmp['response'];
-					    unset($walls_tmp[0]);
-					    break;
-				    }
-			    }
-			    $count = count($walls_tmp);
-			    $user_walls = array_merge($user_walls, $walls_tmp);
-			    $offset += $count;
+		    $code = 'return {"returned": [';
+		    for ($i = 0; $i < 25; $i++) {
+			    $code .= 'API.wall.get({"owner_id": "'.$User->user_id.'","filter": "owner","count": "100","offset": "' . ($i * 100) . '"}),';
 		    }
-		    while ($count == $limit);
+		    $code .= ']};';
+		    while (!isset($result['response'])) {
+			    $result = $vk->api('execute', ['code' => $code]);
+		    }
+		    $self_walls = [];
+		    foreach ($result['response']['returned'] as $wall)   {
+			    unset($wall[0]);
+			    if ($wall) $self_walls = array_merge($self_walls, $wall);
+		    }
 
-		    foreach ( $user_walls as $user_wall)
+		    foreach ( $self_walls as $user_wall)
 		    {
 			    $Wall = Walls::where('user_id',$user_wall['to_id'])->where('wall_id',$user_wall['id'])->first();
-			    if (!$Wall){
+			    if (!$Wall) {
 				    $Wall = new Walls;
 			    }
 			    $Wall->user_id = $user_wall['to_id'];
@@ -139,6 +115,7 @@ class UpdateWalls extends Command
 			    $Wall->save();
 		    }
 		    Users::where('user_id',$User->user_id)->update([ 'status' => 'done']);
+		    $this->info('Update user '.$User->user_id);
 	    }
 	    $this->info('Walls info successful updated');
     }

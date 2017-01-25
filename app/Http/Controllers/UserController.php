@@ -76,25 +76,4 @@ class UserController extends Controller
 		$process = Users::where('status', 'done')->get()->count() / Users::all()->count();
 		echo intval($process*100);
 	}
-
-
-
-	public function test(Request $request)
-	{
-		$VKConfig = App('service.vkconfig');
-		$vk = new VK( $VKConfig->get_config('app_id'), $VKConfig->get_config('api_secret'), $request->cookie('token'));
-
-
-		$id = 15684756;
-		while(true) {
-			$code = 'return {"returned": [';
-			for ($i = $k; $i < 25 + $k; $i++) {
-				$code .= 'API.wall.get({"owner_id": "' . $id . '","count": "100","offset": "' . ($i * 100) . '"}),';
-			}
-			$code .= ']};';
-
-			$resp = $vk->api('execute', ['code' => $code]);
-		}
-		dd($resp);//TODO
-	}
 }

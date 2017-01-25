@@ -9,6 +9,7 @@
                 data: null,
                 success: function (msg) {
                     $("span").html(msg);
+                    if (msg == 100) location.reload();
                 },
                 complete: function (msg) {
                     setTimeout(updateProcess, 1000);

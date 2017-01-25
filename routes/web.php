@@ -10,7 +10,6 @@
 | to using a Closure or controller method. Build something great!
 |
 */
-Route::get('/test', 'UserController@test');
 Route::get('/uploadprocess', 'UserController@getUploadProcess');
 Route::get('/auth', 'UserController@auth');
 Route::get('/',[ 'middleware' => [ 'VKauth', 'UserStatus'],'uses' => 'UserController@index']);
