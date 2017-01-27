@@ -52,23 +52,15 @@ class UserController extends Controller
 	{
 		$User = Token::where('token',$request->cookie('token'))->first()->user()->first();
 
-		$FriendStats = $User->friends()->get()->map(function ($item){ return array_merge($item->user()->statistics(),$item->user()->toArray());});
+		$FriendStats = $User->friends()->get()->map(function ($item){ return [$item->user()->statistics(),$item->user()->toArray()];});
 
-		if (!$User){
-			$User = new Users;
-			$User->user_id = Token::where('token',$request->cookie('token'))->first()->user_id;
-			$User->save();
-		}
-		if ($User){
-			$data = array(
-				'title' => 'Друзья пользователя :'.$User->last_name.' '.$User->first_name,
-				'Owner' => $User,
-				'Statistics' => $User->statistics(),
-				'FriendStats' => $FriendStats
-			);
-			return view('pages.friends',$data);
-		}
-		return view('pages.wait');//delete
+		$data = array(
+			'title' => 'Друзья пользователя :'.$User->last_name.' '.$User->first_name,
+			'Owner' => $User,
+			'Statistics' => $User->statistics(),
+			'FriendStats' => $FriendStats
+		);
+		return view('pages.friends',$data);
 	}
 
 	public function getUploadProcess()//just for ajax
