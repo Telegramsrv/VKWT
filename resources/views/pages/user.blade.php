@@ -2,27 +2,29 @@
 
 @section('content')
     <script type="text/javascript">
-        google.charts.load('current', {'packages':['corechart']});
-        google.charts.setOnLoadCallback(drawChart);
 
-        function drawChart() {
-            var data = google.visualization.arrayToDataTable([
-                ['Date', 'Like'],
-                    @foreach ( $Statistics as $date => $qty)
-                [ '{{ $date}}', {{ $qty}}],
-                @endforeach
-            ]);
+        $(function () {
+            var chart = new CanvasJS.Chart("curve_chart", {
+                theme: "theme2",
 
-            var options = {
-                title: 'Like statistics',
-                curveType: 'function',
-                legend: { position: 'bottom' }
-            };
-
-            var chart = new google.visualization.LineChart(document.getElementById('curve_chart'));
-
-            chart.draw(data, options);
-        }
+                axisX: {
+                    labelFormatter: function (e) {
+                        return CanvasJS.formatDate(e.value, "D MMM YY");
+                    }
+                },
+                data: [
+                    {
+                        type: "spline",
+                        dataPoints: [
+                                @foreach ( $Statistics as $date => $qty)
+                            { x: new Date("{{$date}}"), y: {{$qty}} },
+                            @endforeach
+                        ]
+                    }
+                ]
+            });
+            chart.render();
+        });
     </script>
 <div class="row bg-white">
     <img src="{{ $Owner->photo }}" class="img-circle col-sm-2">

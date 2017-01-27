@@ -14,7 +14,7 @@ class Users extends Model
 		$walls = $this->wallPosts()->get();
 
 		foreach ($walls as $wall) {
-			$wall->date  = date('d-m-Y', $wall->date);
+			$wall->date  = date('Y-m-d', $wall->date);
 			if (array_key_exists($wall->date,$buffer)){
 				$buffer[$wall->date] += $wall->likes;
 			}
