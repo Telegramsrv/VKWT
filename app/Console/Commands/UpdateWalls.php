@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use Cache;
 use App\Users;
 use VK\VK;
 use App\Token;
@@ -83,8 +84,10 @@ class UpdateWalls extends Command
 				    $Wall->likes   = $user_wall['likes']['count'];
 				    $Wall->save();
 			    }
+
+			    Cache::put( $friend->friend_id, [ $friend->user()->statistics(), $friend->user()->toArray()], 24*60);
 			    Users::where('user_id',$friend->friend_id)->update([ 'status' => 'done']);
-			    $this->info('User id'.$friend->friend_id.' walls add');
+			    $this->info('User id'.$friend->friend_id.' walls updated');
 		    }
 
 		    //update self walls
@@ -114,6 +117,8 @@ class UpdateWalls extends Command
 			    $Wall->likes   = $user_wall['likes']['count'];
 			    $Wall->save();
 		    }
+
+		    Cache::put( $User->user_id, [ $User->statistics(), $User->toArray()], 24*60);
 		    Users::where('user_id',$User->user_id)->update([ 'status' => 'done']);
 		    $this->info('Update user '.$User->user_id);
 	    }

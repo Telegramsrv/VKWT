@@ -33,7 +33,7 @@
         <p>Всего записей:{{$Owner->qtyWallPosts()}}</p>
         <p>Всего лайков:{{$Owner->qtyLikes()}}</p>
     </div>
-        <div id="curve_chart" style="width: 100%; height: 500px" class="col-md-5"></div>
+        <div id="curve_chart" style="width: 95%; height: 500px" class="col-md-5"></div>
 </div><br/>
 <div class="row bg-white">
     <h4 class="text-center">Самый популярный пост</h4>

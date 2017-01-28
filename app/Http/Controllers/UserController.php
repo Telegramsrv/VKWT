@@ -4,9 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Token;
 use App\Users;
+use Cache;
 
-use gchart\gLineChart;
-use gchart\gPieChart;
 use Illuminate\Http\Request;
 use VK\VK;
 
@@ -52,7 +51,9 @@ class UserController extends Controller
 	{
 		$User = Token::where('token',$request->cookie('token'))->first()->user()->first();
 
-		$FriendStats = $User->friends()->get()->map(function ($item){ return [$item->user()->statistics(),$item->user()->toArray()];});
+//		$FriendStats = $User->friends()->get()->map(function ($item){ return [$item->user()->statistics(),$item->user()->toArray()];});
+
+		$FriendStats = $User->friends()->get()->map(function ($item){ return Cache::get($item->friend_id);});
 
 		$data = array(
 			'title' => 'Друзья пользователя :'.$User->last_name.' '.$User->first_name,
