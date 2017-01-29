@@ -11,19 +11,19 @@ class Walls extends Model
 
 	public function user()
 	{
-		return $this->belongsTo('App\Users');
+		return $this->belongsTo('App\Users')->first();
 	}
 
 	public function getFullWallPost()
 	{
 		$VKConfig = App('service.vkconfig');
 
-		$Token = $this->user()->first()->token()->first();
+		$Token = $this->user()->token()->first();
 		if (!$Token) {
-			$Friend = Friends::where('friend_id',$this->user()->first()->user_id)->first();
+			$Friend = Friends::where('friend_id',$this->user()->user_id)->first();
 			$Token = Users::where('user_id',$Friend->user_id)->first()->token()->first();
 		} else {
-			$Token = $this->user()->first()->token()->first();
+			$Token = $this->user()->token()->first();
 		}
 
 		$vk = new VK( $VKConfig->get_config('app_id'), $VKConfig->get_config('api_secret'), $Token->token);

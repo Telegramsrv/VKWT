@@ -5,7 +5,7 @@ Cron func
 
 php artisan update:users
 
-php artisan update:walls
+php artisan update:walls(It should run more frequently than once every 24 hours)
 
 # Laravel PHP Framework
 

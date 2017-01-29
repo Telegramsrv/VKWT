@@ -77,12 +77,12 @@ class UpdateUsers extends Command
 			    $NewUser = Users::where('user_id',$friend['uid'])->first();
 			    if (!$NewUser){
 				    $NewUser = new Users;
+				    $NewUser->status = 'processing';
 			    }
 			    $NewUser->user_id    = $friend['uid'];
 			    $NewUser->first_name = $friend['first_name'];
 			    $NewUser->last_name = $friend['last_name'];
 			    $NewUser->photo = $friend['photo_100'];
-			    $NewUser->status = 'processing';
 			    $NewUser->save();
 		    }
 
@@ -96,16 +96,16 @@ class UpdateUsers extends Command
 			    );
 		    }
 
-		    $SelfUser = $User->user()->first();
-		    if (!$SelfUser)
+		    $SelfUser = $User->user();
+		    if (!$SelfUser) {
 			    $SelfUser = new Users;
-
+			    $SelfUser->status = 'processing';
+		    }
 		    $userinfo = $userinfo['response'][0];
 		    $SelfUser->user_id    = $userinfo['uid'];
 		    $SelfUser->first_name = $userinfo['first_name'];
 		    $SelfUser->last_name = $userinfo['last_name'];
 		    $SelfUser->photo = $userinfo['photo_100'];
-		    $SelfUser->status = 'processing';
 		    $SelfUser->save();
 	    }
 	    $this->info('Users and Friends info successful updated!');

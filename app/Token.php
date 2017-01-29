@@ -10,6 +10,6 @@ class Token extends Model
 
 	public function user()
 	{
-		return $this->belongsTo('App\Users','user_id','user_id');
+		return $this->belongsTo('App\Users','user_id','user_id')->first();
 	}
 }

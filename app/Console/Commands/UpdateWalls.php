@@ -49,7 +49,7 @@ class UpdateWalls extends Command
 	    {
 		    $vk = new VK( $VKConfig->get_config('app_id'), $VKConfig->get_config('api_secret'), $User->token);
 
-		    $FriendList = $User->user()->first()->friends()->get();
+		    $FriendList = $User->user()->friends()->get();
 		    foreach ( $FriendList as $friend)
 		    {
 			    $FriendWallUpdateTime = Walls::where('user_id',$friend->friend_id)->first();
@@ -117,8 +117,7 @@ class UpdateWalls extends Command
 			    $Wall->likes   = $user_wall['likes']['count'];
 			    $Wall->save();
 		    }
-
-		    Cache::put( $User->user_id, [ $User->statistics(), $User->toArray()], 24*60);
+		    Cache::put( $User->user_id, [ $User->user()->statistics(), $User->user()->toArray()], 24*60);
 		    Users::where('user_id',$User->user_id)->update([ 'status' => 'done']);
 		    $this->info('Update user '.$User->user_id);
 	    }

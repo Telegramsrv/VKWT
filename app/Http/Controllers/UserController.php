@@ -18,49 +18,40 @@ class UserController extends Controller
 		$this->_serviceVkConfig = App('service.vkconfig');
 	}
 
-	public function auth( Request $request)
+	public function auth()
 	{
-		$data = array(
+		$data = [
 			'title' => 'VKWT | Главная страница',
-			'url'   => $this->_serviceVkConfig->getAuthorizeURL()
-		);
+			'url'   => $this->_serviceVkConfig->getAuthorizeURL()];
 		return view('pages.login',$data);
 	}
 
 	public function index(Request $request)
 	{
-		$User = Token::where('token',$request->cookie('token'))->first()->user()->first();
+		$User = Token::where('token',$request->cookie('token'))->first()->user();
 		return redirect('/id'.$User->user_id);
 	}
 
 	public function getUser($id)
 	{
 		$User = Users::where('user_id',$id)->first();
-	//		$FriendStats = $User->friends()->get()->map(function ($item){return $item->user()->statistics();});
-		$data = array(
-			'title' => 'Пользователь '.$User->last_name.' '.$User->first_name,
-			'Owner' => $User,
-			'TopWall' => $User->getTopRatedPost()->getFullWallPost(),
-			'FirstWall' => $User->getFirstPost()->getFullWallPost(),
-			'Statistics' => $User->statistics()
-		);
+		$data = ['title' => 'Пользователь '.$User->last_name.' '.$User->first_name,
+				'Owner' => $User,
+				'TopWall' => $User->getTopRatedPost()->getFullWallPost(),
+				'FirstWall' => $User->getFirstPost()->getFullWallPost(),
+				'Statistics' => Cache::get($User->user_id)[0]];
 		return view('pages.user',$data);
 	}
 
 	public function getFriend(Request $request)
 	{
-		$User = Token::where('token',$request->cookie('token'))->first()->user()->first();
-
-//		$FriendStats = $User->friends()->get()->map(function ($item){ return [$item->user()->statistics(),$item->user()->toArray()];});
-
+		$User = Token::where('token',$request->cookie('token'))->first()->user();
 		$FriendStats = $User->friends()->get()->map(function ($item){ return Cache::get($item->friend_id);});
 
-		$data = array(
-			'title' => 'Друзья пользователя :'.$User->last_name.' '.$User->first_name,
-			'Owner' => $User,
-			'Statistics' => $User->statistics(),
-			'FriendStats' => $FriendStats
-		);
+		$data = ['title' => 'Друзья пользователя :'.$User->last_name.' '.$User->first_name,
+				'Owner' => $User,
+				'Statistics' => $User->statistics(),
+				'FriendStats' => $FriendStats];
 		return view('pages.friends',$data);
 	}
 
