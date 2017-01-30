@@ -7,6 +7,7 @@ php artisan update:users
 
 php artisan update:walls(It should run more frequently than once every 24 hours)
 
+php artisan update:walls_fast(update last 100 walls for all user)
 # Laravel PHP Framework
 
 [![Build Status](https://travis-ci.org/laravel/framework.svg)](https://travis-ci.org/laravel/framework)

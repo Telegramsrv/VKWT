@@ -23,7 +23,7 @@ class UpdateWalls extends Command
      *
      * @var string
      */
-    protected $description = 'Command description';
+    protected $description = 'Update all user walls';
 
     /**
      * Create a new command instance.

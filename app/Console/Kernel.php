@@ -14,7 +14,8 @@ class Kernel extends ConsoleKernel
      */
     protected $commands = [
         Commands\UpdateUsers::class,
-        Commands\UpdateWalls::class
+        Commands\UpdateWalls::class,
+        Commands\UpdateWallsFast::class
     ];
 
     /**
