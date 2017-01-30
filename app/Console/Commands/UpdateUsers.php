@@ -64,8 +64,8 @@ class UpdateUsers extends Command
 		    $user_friends = $user_friends['response'];
 		    foreach ( $user_friends as $friend)
 		    {
-		    	if (isset($friend['deactivated']))
-		    		continue;
+		    	if (isset($friend['deactivated']))  continue;
+
 			    $NewFrind = Friends::where('user_id', $User->user_id)->where('friend_id',$friend['uid'])->first();
 			    if (!$NewFrind){
 				    $NewFrind = new Friends;
@@ -73,6 +73,7 @@ class UpdateUsers extends Command
 			    $NewFrind->user_id = $User->user_id;
 			    $NewFrind->friend_id = $friend['uid'];
 			    $NewFrind->save();
+			    $NewFrind->touch();
 
 			    $NewUser = Users::where('user_id',$friend['uid'])->first();
 			    if (!$NewUser){
@@ -107,6 +108,12 @@ class UpdateUsers extends Command
 		    $SelfUser->last_name = $userinfo['last_name'];
 		    $SelfUser->photo = $userinfo['photo_100'];
 		    $SelfUser->save();
+
+		    Friends::where('user_id',$User->user_id)->where('updated_at','<',date('Y-m-d H:m:s',time() - 10*60))->get()->map(function ($user){
+		    	Users::find($user->friend_id)->delete();
+		    	$user->delete();
+			    $this->info('User '.$user->friend_id.' deleted!');
+		    } );
 	    }
 	    $this->info('Users and Friends info successful updated!');
     }
